@@ -1,18 +1,26 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
+const keywords = require('./routes/api/keywords');
 
 const app = express();
 
-app.get('/api/sentinel' , (req, res) => {
-    const keywords = [
-        {keyword: 'bomb'},
-        {keyword: 'terrorist'},
-        {keyword: 'gun'},
-        {keyword: 'explosives'}
-    ];
+//Bodyparser Middleware
+app.use(bodyParser.json());
 
-    res.json(keywords);
-});
+// DB Config
+const db = require('./config/keys').mongoURI;
 
-const port = 5000;
+//Connect to Mongo
+mongoose
+    .connect(db)
+    .then(() => console.log('MongoDB Connected...'))
+    .catch(err => console.log(err));
 
-app.listen(port, () => console.log(`Server started on port ${port}`));
+    //Use routes
+    app.use('/api/keywords', keywords);
+
+    const port = process.env.PORT || 5000;
+
+    app.listen(port, () => console.log(`Server started on port ${port}`));
